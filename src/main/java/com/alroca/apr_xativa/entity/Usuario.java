@@ -1,5 +1,6 @@
 package com.alroca.apr_xativa.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -35,6 +36,7 @@ public class Usuario {
     @NotBlank
     private String email;
 
+    @JsonIgnore
     @Column(nullable = false, length = 255)
     @NotBlank
     private String password;
