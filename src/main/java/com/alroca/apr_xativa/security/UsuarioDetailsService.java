@@ -14,13 +14,13 @@ public class UsuarioDetailsService implements UserDetailsService {
     private final UsuarioRepository usuarioRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return usuarioRepository.findByEmail(email)
+    public UserDetails loadUserByUsername(String dni) throws UsernameNotFoundException {
+        return usuarioRepository.findByDni(dni)
                 .map(usuario -> org.springframework.security.core.userdetails.User.builder()
-                        .username(usuario.getEmail())
+                        .username(usuario.getDni())
                         .password(usuario.getPassword())
                         .roles(usuario.getRol().name())
                         .build())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + dni));
     }
 }

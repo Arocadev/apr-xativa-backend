@@ -32,7 +32,7 @@ public class UsuarioController {
     @GetMapping("/me")
     public ResponseEntity<UsuarioResponseDTO> me(@AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(usuarioMapper.toResponse(
-                usuarioService.findByEmail(userDetails.getUsername())
+                usuarioService.findByDni(userDetails.getUsername())
         ));
     }
 

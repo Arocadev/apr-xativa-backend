@@ -26,7 +26,7 @@ public class DerechoAccesoController {
     @GetMapping
     public ResponseEntity<List<DerechoAccesoResponseDTO>> listar(
             @AuthenticationPrincipal UserDetails userDetails) {
-        Long usuarioId = usuarioService.findByEmail(userDetails.getUsername()).getId();
+        Long usuarioId = usuarioService.findByDni(userDetails.getUsername()).getId();
         return ResponseEntity.ok(
                 derechoAccesoService.findByUsuario(usuarioId).stream()
                         .map(derechoAccesoMapper::toResponse)
@@ -38,7 +38,7 @@ public class DerechoAccesoController {
     public ResponseEntity<DerechoAccesoResponseDTO> crearPermanente(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody Map<String, Long> body) {
-        Long usuarioId = usuarioService.findByEmail(userDetails.getUsername()).getId();
+        Long usuarioId = usuarioService.findByDni(userDetails.getUsername()).getId();
         return ResponseEntity.ok(derechoAccesoMapper.toResponse(
                 derechoAccesoService.crearPermanente(usuarioId, body.get("vehiculoId"))
         ));
@@ -48,7 +48,7 @@ public class DerechoAccesoController {
     public ResponseEntity<DerechoAccesoResponseDTO> crearPuntual(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody Map<String, String> body) {
-        Long usuarioId = usuarioService.findByEmail(userDetails.getUsername()).getId();
+        Long usuarioId = usuarioService.findByDni(userDetails.getUsername()).getId();
         Long vehiculoId = Long.parseLong(body.get("vehiculoId"));
         LocalDate fecha = LocalDate.parse(body.get("fecha"));
         return ResponseEntity.ok(derechoAccesoMapper.toResponse(
@@ -60,7 +60,7 @@ public class DerechoAccesoController {
     public ResponseEntity<Void> eliminar(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long id) {
-        Long usuarioId = usuarioService.findByEmail(userDetails.getUsername()).getId();
+        Long usuarioId = usuarioService.findByDni(userDetails.getUsername()).getId();
         derechoAccesoService.eliminar(id, usuarioId);
         return ResponseEntity.noContent().build();
     }

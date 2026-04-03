@@ -26,7 +26,7 @@ public class SolicitudController {
     @PostMapping
     public ResponseEntity<SolicitudResponseDTO> crear(
             @AuthenticationPrincipal UserDetails userDetails) {
-        Long usuarioId = usuarioService.findByEmail(userDetails.getUsername()).getId();
+        Long usuarioId = usuarioService.findByDni(userDetails.getUsername()).getId();
         return ResponseEntity.ok(solicitudMapper.toResponse(
                 solicitudService.crear(usuarioId)
         ));
@@ -35,7 +35,7 @@ public class SolicitudController {
     @GetMapping("/me")
     public ResponseEntity<List<SolicitudResponseDTO>> misSolicitudes(
             @AuthenticationPrincipal UserDetails userDetails) {
-        Long usuarioId = usuarioService.findByEmail(userDetails.getUsername()).getId();
+        Long usuarioId = usuarioService.findByDni(userDetails.getUsername()).getId();
         return ResponseEntity.ok(
                 solicitudService.findByUsuario(usuarioId).stream()
                         .map(solicitudMapper::toResponse)
@@ -58,7 +58,7 @@ public class SolicitudController {
     public ResponseEntity<SolicitudResponseDTO> aprobar(
             @PathVariable Long id,
             @AuthenticationPrincipal UserDetails userDetails) {
-        Long adminId = usuarioService.findByEmail(userDetails.getUsername()).getId();
+        Long adminId = usuarioService.findByDni(userDetails.getUsername()).getId();
         return ResponseEntity.ok(solicitudMapper.toResponse(
                 solicitudService.aprobar(id, adminId)
         ));
@@ -70,7 +70,7 @@ public class SolicitudController {
             @PathVariable Long id,
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody Map<String, String> body) {
-        Long adminId = usuarioService.findByEmail(userDetails.getUsername()).getId();
+        Long adminId = usuarioService.findByDni(userDetails.getUsername()).getId();
         return ResponseEntity.ok(solicitudMapper.toResponse(
                 solicitudService.rechazar(id, adminId, body.get("observaciones"))
         ));

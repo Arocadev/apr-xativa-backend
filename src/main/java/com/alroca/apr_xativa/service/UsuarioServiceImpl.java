@@ -22,6 +22,12 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    public Usuario findByDni(String dni) {
+        return usuarioRepository.findByDni(dni)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+
+    @Override
     public Usuario findById(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
