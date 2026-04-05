@@ -4,6 +4,10 @@ import com.alroca.apr_xativa.entity.DerechoAcceso;
 import com.alroca.apr_xativa.entity.Solicitud;
 import com.alroca.apr_xativa.entity.Usuario;
 import com.alroca.apr_xativa.entity.Vehiculo;
+import com.alroca.apr_xativa.exception.AccesoNoPermitidoException;
+import com.alroca.apr_xativa.exception.DerechoAccesoNotFoundException;
+import com.alroca.apr_xativa.exception.FechaNoValidaException;
+import com.alroca.apr_xativa.exception.VehiculoNotFoundException;
 import com.alroca.apr_xativa.repository.DerechoAccesoRepository;
 import com.alroca.apr_xativa.repository.SolicitudRepository;
 import com.alroca.apr_xativa.repository.VehiculoRepository;
@@ -33,10 +37,10 @@ public class DerechoAccesoServiceImpl implements DerechoAccesoService {
         validarSolicitudAprobada(usuarioId);
 
         Vehiculo vehiculo = vehiculoRepository.findById(vehiculoId)
-                .orElseThrow(() -> new RuntimeException("Vehículo no encontrado"));
+                .orElseThrow(() -> new VehiculoNotFoundException(vehiculoId));
 
         if (!vehiculo.getUsuario().getId().equals(usuarioId)) {
-            throw new RuntimeException("El vehículo no pertenece a este usuario");
+            throw new AccesoNoPermitidoException("El vehiculo no pertenece a este usuario");
         }
 
         DerechoAcceso derecho = DerechoAcceso.builder()
@@ -59,14 +63,14 @@ public class DerechoAccesoServiceImpl implements DerechoAccesoService {
 
         if (fecha.isBefore(LocalDate.now().minusDays(5)) ||
                 fecha.isAfter(LocalDate.now().plusDays(90))) {
-            throw new RuntimeException("La fecha debe estar entre 5 dias antes y 90 dias despues de hoy");
+            throw new FechaNoValidaException("La fecha debe estar entre 5 dias antes y 90 dias despues de hoy");
         }
 
         Vehiculo vehiculo = vehiculoRepository.findById(vehiculoId)
-                .orElseThrow(() -> new RuntimeException("Vehículo no encontrado"));
+                .orElseThrow(() -> new VehiculoNotFoundException(vehiculoId));
 
         if (!vehiculo.getUsuario().getId().equals(usuarioId)) {
-            throw new RuntimeException("El vehículo no pertenece a este usuario");
+            throw new AccesoNoPermitidoException("El vehiculo no pertenece a este usuario");
         }
 
         DerechoAcceso derecho = DerechoAcceso.builder()
@@ -85,14 +89,14 @@ public class DerechoAccesoServiceImpl implements DerechoAccesoService {
     @Override
     public void eliminar(Long derechoId, Long usuarioId) {
         DerechoAcceso derecho = derechoAccesoRepository.findById(derechoId)
-                .orElseThrow(() -> new RuntimeException("Derecho no encontrado"));
+                .orElseThrow(() -> new DerechoAccesoNotFoundException(derechoId));
 
         if (!derecho.getUsuario().getId().equals(usuarioId)) {
-            throw new RuntimeException("No tienes permiso para eliminar este derecho");
+            throw new AccesoNoPermitidoException("No tienes permiso para eliminar este derecho");
         }
 
         if (derecho.getTipoAcred() == Vehiculo.TipoAcred.ACREDITADO) {
-            throw new RuntimeException("No se pueden eliminar derechos de tipo acreditado");
+            throw new AccesoNoPermitidoException("No se pueden eliminar derechos de tipo acreditado");
         }
 
         derecho.setActivo(false);
@@ -101,6 +105,6 @@ public class DerechoAccesoServiceImpl implements DerechoAccesoService {
 
     private void validarSolicitudAprobada(Long usuarioId) {
         solicitudRepository.findByUsuarioIdAndEstado(usuarioId, Solicitud.Estado.APROBADA)
-                .orElseThrow(() -> new RuntimeException("El usuario no tiene una solicitud aprobada"));
+                .orElseThrow(() -> new AccesoNoPermitidoException("El usuario no tiene una solicitud aprobada"));
     }
 }

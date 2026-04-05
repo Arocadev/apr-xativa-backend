@@ -1,5 +1,6 @@
 package com.alroca.apr_xativa.config;
 
+import com.alroca.apr_xativa.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -15,14 +16,44 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException ex) {
+    @ExceptionHandler(UsuarioNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleUsuarioNotFound(UsuarioNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(VehiculoNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleVehiculoNotFound(VehiculoNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(SolicitudNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleSolicitudNotFound(SolicitudNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(DerechoAccesoNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleDerechoNotFound(DerechoAccesoNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(DuplicadoException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicado(DuplicadoException ex) {
+        return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(AccesoNoPermitidoException.class)
+    public ResponseEntity<Map<String, Object>> handleAccesoNoPermitido(AccesoNoPermitidoException ex) {
+        return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
+    @ExceptionHandler(FechaNoValidaException.class)
+    public ResponseEntity<Map<String, Object>> handleFechaNoValida(FechaNoValidaException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException ex) {
-        return buildResponse(HttpStatus.UNAUTHORIZED, "DNI o contraseña incorrectos");
+        return buildResponse(HttpStatus.UNAUTHORIZED, "DNI o contrasena incorrectos");
     }
 
     @ExceptionHandler(AccessDeniedException.class)

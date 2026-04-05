@@ -1,6 +1,8 @@
 package com.alroca.apr_xativa.service;
 
 import com.alroca.apr_xativa.entity.Usuario;
+import com.alroca.apr_xativa.exception.DuplicadoException;
+import com.alroca.apr_xativa.exception.UsuarioNotFoundException;
 import com.alroca.apr_xativa.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,19 +20,19 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Usuario findByEmail(String email) {
         return usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new UsuarioNotFoundException(email));
     }
 
     @Override
     public Usuario findByDni(String dni) {
         return usuarioRepository.findByDni(dni)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new UsuarioNotFoundException(dni));
     }
 
     @Override
     public Usuario findById(Long id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new UsuarioNotFoundException("id: " + id));
     }
 
     @Override
@@ -41,10 +43,10 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Usuario registrar(Usuario usuario) {
         if (usuarioRepository.existsByDni(usuario.getDni())) {
-            throw new RuntimeException("Ya existe un usuario con ese DNI");
+            throw new DuplicadoException("Ya existe un usuario con el DNI: " + usuario.getDni());
         }
         if (usuarioRepository.existsByEmail(usuario.getEmail())) {
-            throw new RuntimeException("Ya existe un usuario con ese email");
+            throw new DuplicadoException("Ya existe un usuario con el email: " + usuario.getEmail());
         }
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuario.setRol(Usuario.Rol.USER);

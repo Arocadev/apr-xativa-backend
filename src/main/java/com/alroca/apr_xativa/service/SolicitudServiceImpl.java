@@ -2,6 +2,8 @@ package com.alroca.apr_xativa.service;
 
 import com.alroca.apr_xativa.entity.Solicitud;
 import com.alroca.apr_xativa.entity.Usuario;
+import com.alroca.apr_xativa.exception.DuplicadoException;
+import com.alroca.apr_xativa.exception.SolicitudNotFoundException;
 import com.alroca.apr_xativa.repository.SolicitudRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,7 @@ public class SolicitudServiceImpl implements SolicitudService {
     @Override
     public Solicitud crear(Long usuarioId) {
         solicitudRepository.findByUsuarioIdAndEstado(usuarioId, Solicitud.Estado.PENDIENTE)
-                .ifPresent(s -> { throw new RuntimeException("Ya tienes una solicitud pendiente"); });
+                .ifPresent(s -> { throw new DuplicadoException("Ya tienes una solicitud pendiente"); });
 
         Usuario usuario = usuarioService.findById(usuarioId);
         Solicitud solicitud = Solicitud.builder()
@@ -42,7 +44,7 @@ public class SolicitudServiceImpl implements SolicitudService {
     @Override
     public Solicitud aprobar(Long solicitudId, Long adminId) {
         Solicitud solicitud = solicitudRepository.findById(solicitudId)
-                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+                .orElseThrow(() -> new SolicitudNotFoundException(solicitudId));
         Usuario admin = usuarioService.findById(adminId);
         solicitud.setEstado(Solicitud.Estado.APROBADA);
         solicitud.setAdmin(admin);
@@ -53,7 +55,7 @@ public class SolicitudServiceImpl implements SolicitudService {
     @Override
     public Solicitud rechazar(Long solicitudId, Long adminId, String observaciones) {
         Solicitud solicitud = solicitudRepository.findById(solicitudId)
-                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+                .orElseThrow(() -> new SolicitudNotFoundException(solicitudId));
         Usuario admin = usuarioService.findById(adminId);
         solicitud.setEstado(Solicitud.Estado.RECHAZADA);
         solicitud.setAdmin(admin);

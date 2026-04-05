@@ -2,6 +2,9 @@ package com.alroca.apr_xativa.service;
 
 import com.alroca.apr_xativa.entity.Usuario;
 import com.alroca.apr_xativa.entity.Vehiculo;
+import com.alroca.apr_xativa.exception.AccesoNoPermitidoException;
+import com.alroca.apr_xativa.exception.DuplicadoException;
+import com.alroca.apr_xativa.exception.VehiculoNotFoundException;
 import com.alroca.apr_xativa.repository.VehiculoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +26,7 @@ public class VehiculoServiceImpl implements VehiculoService {
     @Override
     public Vehiculo alta(Long usuarioId, String matricula, Vehiculo.TipoAcred tipoAcred) {
         if (vehiculoRepository.existsByMatriculaAndUsuarioId(matricula, usuarioId)) {
-            throw new RuntimeException("Ya tienes ese vehículo registrado");
+            throw new DuplicadoException("Ya tienes el vehiculo con matricula " + matricula + " registrado");
         }
         Usuario usuario = usuarioService.findById(usuarioId);
         Vehiculo vehiculo = Vehiculo.builder()
@@ -38,9 +41,9 @@ public class VehiculoServiceImpl implements VehiculoService {
     @Override
     public void baja(Long vehiculoId, Long usuarioId) {
         Vehiculo vehiculo = vehiculoRepository.findById(vehiculoId)
-                .orElseThrow(() -> new RuntimeException("Vehículo no encontrado"));
+                .orElseThrow(() -> new VehiculoNotFoundException(vehiculoId));
         if (!vehiculo.getUsuario().getId().equals(usuarioId)) {
-            throw new RuntimeException("No tienes permiso para dar de baja este vehículo");
+            throw new AccesoNoPermitidoException("No tienes permiso para dar de baja este vehiculo");
         }
         vehiculo.setActivo(false);
         vehiculoRepository.save(vehiculo);
