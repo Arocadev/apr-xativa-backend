@@ -6,6 +6,7 @@ import com.alroca.apr_xativa.exception.AccesoNoPermitidoException;
 import com.alroca.apr_xativa.exception.DuplicadoException;
 import com.alroca.apr_xativa.exception.VehiculoNotFoundException;
 import com.alroca.apr_xativa.repository.VehiculoRepository;
+import com.alroca.apr_xativa.utils.ValidacionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,9 @@ public class VehiculoServiceImpl implements VehiculoService {
 
     @Override
     public Vehiculo alta(Long usuarioId, String matricula, Vehiculo.TipoAcred tipoAcred) {
+        if (!ValidacionUtils.esMatriculaValida(matricula)) {
+            throw new IllegalArgumentException("Formato de matricula incorrecto: " + matricula);
+        }
         if (vehiculoRepository.existsByMatriculaAndUsuarioId(matricula, usuarioId)) {
             throw new DuplicadoException("Ya tienes el vehiculo con matricula " + matricula + " registrado");
         }

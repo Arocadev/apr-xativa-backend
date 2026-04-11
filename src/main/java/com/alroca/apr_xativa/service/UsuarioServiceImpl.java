@@ -4,6 +4,7 @@ import com.alroca.apr_xativa.entity.Usuario;
 import com.alroca.apr_xativa.exception.DuplicadoException;
 import com.alroca.apr_xativa.exception.UsuarioNotFoundException;
 import com.alroca.apr_xativa.repository.UsuarioRepository;
+import com.alroca.apr_xativa.utils.ValidacionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public Usuario registrar(Usuario usuario) {
+        if (!ValidacionUtils.esDniValido(usuario.getDni())) {
+            throw new IllegalArgumentException("Formato de DNI o NIE incorrecto: " + usuario.getDni());
+        }
         if (usuarioRepository.existsByDni(usuario.getDni())) {
             throw new DuplicadoException("Ya existe un usuario con el DNI: " + usuario.getDni());
         }
