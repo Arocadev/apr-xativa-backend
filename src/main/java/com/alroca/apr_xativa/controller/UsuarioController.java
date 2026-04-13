@@ -4,11 +4,10 @@ import com.alroca.apr_xativa.dto.UsuarioRequestDTO;
 import com.alroca.apr_xativa.dto.UsuarioResponseDTO;
 import com.alroca.apr_xativa.mapper.UsuarioMapper;
 import com.alroca.apr_xativa.service.UsuarioService;
+import com.alroca.apr_xativa.utils.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +19,7 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
     private final UsuarioMapper usuarioMapper;
+    private final SecurityUtils securityUtils;
 
     @PostMapping("/registro")
     public ResponseEntity<UsuarioResponseDTO> registro(@Valid @RequestBody UsuarioRequestDTO request) {
@@ -29,9 +29,9 @@ public class UsuarioController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UsuarioResponseDTO> me(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<UsuarioResponseDTO> me() {
         return ResponseEntity.ok(usuarioMapper.toResponse(
-                usuarioService.findByDni(userDetails.getUsername())
+                securityUtils.getUsuarioAutenticado()
         ));
     }
 

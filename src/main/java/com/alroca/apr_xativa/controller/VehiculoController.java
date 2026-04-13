@@ -2,15 +2,14 @@ package com.alroca.apr_xativa.controller;
 
 import com.alroca.apr_xativa.dto.VehiculoRequestDTO;
 import com.alroca.apr_xativa.dto.VehiculoResponseDTO;
-import com.alroca.apr_xativa.mapper.VehiculoMapper;
-import com.alroca.apr_xativa.service.UsuarioService;
-import com.alroca.apr_xativa.service.VehiculoService;
+import com.alroca.apr_xativa.entity.Usuario;
 import com.alroca.apr_xativa.entity.Vehiculo;
+import com.alroca.apr_xativa.mapper.VehiculoMapper;
+import com.alroca.apr_xativa.service.VehiculoService;
+import com.alroca.apr_xativa.utils.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,13 +20,12 @@ import java.util.List;
 public class VehiculoController {
 
     private final VehiculoService vehiculoService;
-    private final UsuarioService usuarioService;
     private final VehiculoMapper vehiculoMapper;
+    private final SecurityUtils securityUtils;
 
     @GetMapping
-    public ResponseEntity<List<VehiculoResponseDTO>> listar(
-            @AuthenticationPrincipal UserDetails userDetails) {
-        Long usuarioId = usuarioService.findByDni(userDetails.getUsername()).getId();
+    public ResponseEntity<List<VehiculoResponseDTO>> listar() {
+        Long usuarioId = securityUtils.getUsuarioAutenticado().getId();
         return ResponseEntity.ok(
                 vehiculoService.findByUsuario(usuarioId).stream()
                         .map(vehiculoMapper::toResponse)
@@ -36,10 +34,8 @@ public class VehiculoController {
     }
 
     @PostMapping
-    public ResponseEntity<VehiculoResponseDTO> alta(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @Valid @RequestBody VehiculoRequestDTO request) {
-        Long usuarioId = usuarioService.findByDni(userDetails.getUsername()).getId();
+    public ResponseEntity<VehiculoResponseDTO> alta(@Valid @RequestBody VehiculoRequestDTO request) {
+        Long usuarioId = securityUtils.getUsuarioAutenticado().getId();
         return ResponseEntity.ok(vehiculoMapper.toResponse(
                 vehiculoService.alta(usuarioId, request.getMatricula(),
                         Vehiculo.TipoAcred.valueOf(request.getTipoAcred()))
@@ -47,10 +43,8 @@ public class VehiculoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> baja(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable Long id) {
-        Long usuarioId = usuarioService.findByDni(userDetails.getUsername()).getId();
+    public ResponseEntity<Void> baja(@PathVariable Long id) {
+        Long usuarioId = securityUtils.getUsuarioAutenticado().getId();
         vehiculoService.baja(id, usuarioId);
         return ResponseEntity.noContent().build();
     }
