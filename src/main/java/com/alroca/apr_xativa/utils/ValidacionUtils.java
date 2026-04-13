@@ -9,7 +9,7 @@ public class ValidacionUtils {
     private static final String REGEX_NIE = "^[XYZ][0-9]{7}[A-Z]$";
 
     // Matrícula nueva española: 4 números + 3 letras
-    private static final String REGEX_MATRICULA_NUEVA = "^[0-9]{4}[BCDFGHJKLMNPRSTUVWXYZ]{3}$";
+    private static final String REGEX_MATRICULA_NUEVA = "^[0-9]{4}[A-Z]{3}$";
 
     // Matrícula antigua española: 1-2 letras + 4 números + 2 letras
     private static final String REGEX_MATRICULA_ANTIGUA = "^[A-Z]{1,2}[0-9]{4}[A-Z]{2}$";

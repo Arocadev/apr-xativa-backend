@@ -6,7 +6,6 @@ import com.alroca.apr_xativa.service.SolicitudService;
 import com.alroca.apr_xativa.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -43,7 +42,6 @@ public class SolicitudController {
         );
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/pendientes")
     public ResponseEntity<List<SolicitudResponseDTO>> pendientes() {
         return ResponseEntity.ok(
@@ -53,7 +51,6 @@ public class SolicitudController {
         );
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}/aprobar")
     public ResponseEntity<SolicitudResponseDTO> aprobar(
             @PathVariable Long id,
@@ -64,7 +61,6 @@ public class SolicitudController {
         ));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}/rechazar")
     public ResponseEntity<SolicitudResponseDTO> rechazar(
             @PathVariable Long id,
