@@ -10,4 +10,5 @@ public interface UsuarioService {
     List<Usuario> findAll();
     Usuario registrar(Usuario usuario);
     void desactivar(Long id);
+    void reactivar(Long id);
 }

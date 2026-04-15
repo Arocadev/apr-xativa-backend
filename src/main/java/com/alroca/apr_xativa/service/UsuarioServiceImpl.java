@@ -77,4 +77,13 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuarioRepository.save(usuario);
         log.info("Usuario desactivado correctamente con id: {}", id);
     }
+
+    @Override
+    public void reactivar(Long id) {
+        log.info("Reactivando usuario con id: {}", id);
+        Usuario usuario = findById(id);
+        usuario.setActivo(true);
+        usuarioRepository.save(usuario);
+        log.info("Usuario reactivado correctamente con id: {}", id);
+    }
 }

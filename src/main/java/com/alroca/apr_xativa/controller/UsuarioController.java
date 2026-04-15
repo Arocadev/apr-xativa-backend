@@ -49,4 +49,10 @@ public class UsuarioController {
         usuarioService.desactivar(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/reactivar")
+    public ResponseEntity<Void> reactivar(@PathVariable Long id) {
+        usuarioService.reactivar(id);
+        return ResponseEntity.noContent().build();
+    }
 }
