@@ -10,6 +10,7 @@ import com.alroca.apr_xativa.utils.ValidacionUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,6 +26,17 @@ public class VehiculoServiceImpl implements VehiculoService {
     public List<Vehiculo> findByUsuario(Long usuarioId) {
         log.debug("Listando vehiculos del usuario id: {}", usuarioId);
         return vehiculoRepository.findByUsuarioIdAndActivoTrue(usuarioId);
+    }
+
+    @Override
+    public List<Vehiculo> findAllByUsuario(Long usuarioId) {
+        return vehiculoRepository.findByUsuarioId(usuarioId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Vehiculo> findAll() {
+        return vehiculoRepository.findAll();
     }
 
     @Override

@@ -22,10 +22,11 @@ public class DerechoAccesoController {
     private final SecurityUtils securityUtils;
 
     @GetMapping
-    public ResponseEntity<List<DerechoAccesoResponseDTO>> listar() {
-        Long usuarioId = securityUtils.getUsuarioAutenticado().getId();
+    public ResponseEntity<List<DerechoAccesoResponseDTO>> listar(
+            @RequestParam(required = false) Long usuarioId) {
+        Long id = usuarioId != null ? usuarioId : securityUtils.getUsuarioAutenticado().getId();
         return ResponseEntity.ok(
-                derechoAccesoService.findByUsuario(usuarioId).stream()
+                derechoAccesoService.findByUsuario(id).stream()
                         .map(derechoAccesoMapper::toResponse)
                         .toList()
         );

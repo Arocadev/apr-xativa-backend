@@ -24,10 +24,23 @@ public class VehiculoController {
     private final SecurityUtils securityUtils;
 
     @GetMapping
-    public ResponseEntity<List<VehiculoResponseDTO>> listar() {
-        Long usuarioId = securityUtils.getUsuarioAutenticado().getId();
+    public ResponseEntity<List<VehiculoResponseDTO>> listar(
+            @RequestParam(required = false) Long usuarioId) {
+        Long id = usuarioId != null ? usuarioId : securityUtils.getUsuarioAutenticado().getId();
+        List<Vehiculo> vehiculos = usuarioId != null
+                ? vehiculoService.findAllByUsuario(id)
+                : vehiculoService.findByUsuario(id);
         return ResponseEntity.ok(
-                vehiculoService.findByUsuario(usuarioId).stream()
+                vehiculos.stream()
+                        .map(vehiculoMapper::toResponse)
+                        .toList()
+        );
+    }
+
+    @GetMapping("/todos")
+    public ResponseEntity<List<VehiculoResponseDTO>> listarTodos() {
+        return ResponseEntity.ok(
+                vehiculoService.findAll().stream()
                         .map(vehiculoMapper::toResponse)
                         .toList()
         );
