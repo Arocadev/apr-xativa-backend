@@ -11,4 +11,5 @@ public interface UsuarioService {
     Usuario registrar(Usuario usuario);
     void desactivar(Long id);
     void reactivar(Long id);
+    void cambiarPassword(Long id, String passwordActual, String passwordNueva);
 }

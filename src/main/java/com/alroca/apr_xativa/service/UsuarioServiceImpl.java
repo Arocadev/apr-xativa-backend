@@ -86,4 +86,15 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuarioRepository.save(usuario);
         log.info("Usuario reactivado correctamente con id: {}", id);
     }
+
+    @Override
+    public void cambiarPassword(Long id, String passwordActual, String passwordNueva) {
+        Usuario usuario = findById(id);
+        if (!passwordEncoder.matches(passwordActual, usuario.getPassword())) {
+            throw new IllegalArgumentException("La contraseña actual no es correcta");
+        }
+        usuario.setPassword(passwordEncoder.encode(passwordNueva));
+        usuarioRepository.save(usuario);
+        log.info("Contraseña cambiada correctamente para usuario id: {}", id);
+    }
 }

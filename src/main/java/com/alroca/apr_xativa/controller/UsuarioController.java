@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -53,6 +54,17 @@ public class UsuarioController {
     @PutMapping("/{id}/reactivar")
     public ResponseEntity<Void> reactivar(@PathVariable Long id) {
         usuarioService.reactivar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/cambiar-password")
+    public ResponseEntity<Void> cambiarPassword(
+            @RequestBody Map<String, String> body) {
+        usuarioService.cambiarPassword(
+                securityUtils.getUsuarioAutenticado().getId(),
+                body.get("passwordActual"),
+                body.get("passwordNueva")
+        );
         return ResponseEntity.noContent().build();
     }
 }
