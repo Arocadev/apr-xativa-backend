@@ -47,6 +47,15 @@ public class SolicitudController {
         );
     }
 
+    @GetMapping("/todas")
+    public ResponseEntity<List<SolicitudResponseDTO>> todas() {
+        return ResponseEntity.ok(
+                solicitudService.findAll().stream()
+                        .map(solicitudMapper::toResponse)
+                        .toList()
+        );
+    }
+
     @PutMapping("/{id}/aprobar")
     public ResponseEntity<SolicitudResponseDTO> aprobar(@PathVariable Long id) {
         Long adminId = securityUtils.getUsuarioAutenticado().getId();

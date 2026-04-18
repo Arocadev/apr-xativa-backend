@@ -9,4 +9,5 @@ public interface SolicitudService {
     List<Solicitud> findPendientes();
     Solicitud aprobar(Long solicitudId, Long adminId);
     Solicitud rechazar(Long solicitudId, Long adminId, String observaciones);
+    List<Solicitud> findAll();
 }

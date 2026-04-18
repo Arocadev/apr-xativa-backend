@@ -75,4 +75,9 @@ public class SolicitudServiceImpl implements SolicitudService {
         log.info("Solicitud id: {} rechazada correctamente por admin id: {}", solicitudId, adminId);
         return solicitudRepository.save(solicitud);
     }
+
+    @Override
+    public List<Solicitud> findAll() {
+        return solicitudRepository.findAll();
+    }
 }
