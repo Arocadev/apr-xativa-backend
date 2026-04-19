@@ -9,6 +9,7 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./docker/apr_xativa.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
@@ -37,5 +38,4 @@ services:
       - backend
 
 volumes:
-  - mysql_data:/var/lib/mysql
-  - ./docker/apr_xativa.sql:/docker-entrypoint-initdb.d/init.sql
+  mysql_data:
