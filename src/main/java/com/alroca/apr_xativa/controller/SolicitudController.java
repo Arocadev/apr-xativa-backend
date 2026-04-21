@@ -1,6 +1,7 @@
 package com.alroca.apr_xativa.controller;
 
 import com.alroca.apr_xativa.dto.SolicitudResponseDTO;
+import com.alroca.apr_xativa.entity.Solicitud;
 import com.alroca.apr_xativa.mapper.SolicitudMapper;
 import com.alroca.apr_xativa.service.SolicitudService;
 import com.alroca.apr_xativa.utils.SecurityUtils;
@@ -45,6 +46,18 @@ public class SolicitudController {
                         .map(solicitudMapper::toResponse)
                         .toList()
         );
+    }
+
+    @GetMapping("/estado")
+    public ResponseEntity<Solicitud> getEstadoMiSolicitud() {
+        Long usuarioId = securityUtils.getUsuarioAutenticado().getId();
+        List<Solicitud> solicitudes = solicitudService.findByUsuario(usuarioId);
+        if (solicitudes.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Solicitud ultima = solicitudes.get(solicitudes.size() - 1);
+        return ResponseEntity.ok(ultima);
     }
 
     @GetMapping("/todas")

@@ -1,8 +1,10 @@
 package com.alroca.apr_xativa.service;
 
+import com.alroca.apr_xativa.entity.Solicitud;
 import com.alroca.apr_xativa.entity.Usuario;
 import com.alroca.apr_xativa.exception.DuplicadoException;
 import com.alroca.apr_xativa.exception.UsuarioNotFoundException;
+import com.alroca.apr_xativa.repository.SolicitudRepository;
 import com.alroca.apr_xativa.repository.UsuarioRepository;
 import com.alroca.apr_xativa.utils.ValidacionUtils;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SolicitudRepository solicitudRepository;
 
     @Override
     public Usuario findByEmail(String email) {
@@ -65,8 +68,16 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuario.setRol(Usuario.Rol.USER);
         usuario.setActivo(false);
+
+        Usuario usuarioGuardado = usuarioRepository.save(usuario);
+
+        Solicitud solicitud = new Solicitud();
+        solicitud.setUsuario(usuarioGuardado);
+        solicitud.setEstado(Solicitud.Estado.PENDIENTE);
+        solicitudRepository.save(solicitud);
+
         log.info("Usuario registrado correctamente con DNI: {}", usuario.getDni());
-        return usuarioRepository.save(usuario);
+        return usuarioGuardado;
     }
 
     @Override
