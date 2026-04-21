@@ -64,7 +64,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuario.setRol(Usuario.Rol.USER);
-        usuario.setActivo(true);
+        usuario.setActivo(false);
         log.info("Usuario registrado correctamente con DNI: {}", usuario.getDni());
         return usuarioRepository.save(usuario);
     }
