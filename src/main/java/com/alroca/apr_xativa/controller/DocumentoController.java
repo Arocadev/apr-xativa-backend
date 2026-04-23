@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/documentos")
@@ -39,5 +40,10 @@ public class DocumentoController {
         documentoRepository.save(documento);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<Documento>> getDocumentosByUsuario(@PathVariable Long usuarioId) {
+        return ResponseEntity.ok(documentoRepository.findByUsuarioId(usuarioId));
     }
 }
