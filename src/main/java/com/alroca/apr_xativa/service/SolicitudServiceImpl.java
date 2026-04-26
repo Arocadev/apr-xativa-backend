@@ -58,6 +58,7 @@ public class SolicitudServiceImpl implements SolicitudService {
         solicitud.setEstado(Solicitud.Estado.APROBADA);
         solicitud.setAdmin(admin);
         solicitud.setGestionadaAt(LocalDateTime.now());
+        usuarioService.reactivar(solicitud.getUsuario().getId());
         log.info("Solicitud id: {} aprobada correctamente por admin id: {}", solicitudId, adminId);
         return solicitudRepository.save(solicitud);
     }
