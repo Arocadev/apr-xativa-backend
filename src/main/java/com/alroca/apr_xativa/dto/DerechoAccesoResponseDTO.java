@@ -10,6 +10,7 @@ public class DerechoAccesoResponseDTO {
     private Long usuarioId;
     private Long vehiculoId;
     private String matricula;
+    private String matriculaInvitado;
     private String tipoDerecho;
     private String tipoAcred;
     private LocalDate fechaInicio;

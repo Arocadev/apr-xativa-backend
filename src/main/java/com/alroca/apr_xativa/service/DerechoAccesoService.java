@@ -8,5 +8,6 @@ public interface DerechoAccesoService {
     List<DerechoAcceso> findByUsuario(Long usuarioId);
     DerechoAcceso crearPermanente(Long usuarioId, Long vehiculoId);
     DerechoAcceso crearPuntual(Long usuarioId, Long vehiculoId, LocalDate fecha);
+    DerechoAcceso crearPuntualInvitado(Long usuarioId, String matricula, LocalDate fecha);
     void eliminar(Long derechoId, Long usuarioId);
 }

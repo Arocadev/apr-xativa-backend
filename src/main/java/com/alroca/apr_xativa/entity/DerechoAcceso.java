@@ -23,8 +23,11 @@ public class DerechoAcceso {
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vehiculo_id", nullable = false)
+    @JoinColumn(name = "vehiculo_id", nullable = true)
     private Vehiculo vehiculo;
+
+    @Column(name = "matricula_invitado", length = 10)
+    private String matriculaInvitado;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_derecho", nullable = false, length = 10)

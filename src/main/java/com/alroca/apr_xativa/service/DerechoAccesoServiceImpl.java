@@ -23,6 +23,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DerechoAccesoServiceImpl implements DerechoAccesoService {
 
+    private static final int MAX_INVITACIONES_MES = 5;
+
     private final DerechoAccesoRepository derechoAccesoRepository;
     private final VehiculoRepository vehiculoRepository;
     private final SolicitudRepository solicitudRepository;
@@ -44,7 +46,6 @@ public class DerechoAccesoServiceImpl implements DerechoAccesoService {
                 .orElseThrow(() -> new VehiculoNotFoundException(vehiculoId));
 
         if (!vehiculo.getUsuario().getId().equals(usuarioId)) {
-            log.warn("Usuario id: {} intento crear derecho sobre vehiculo id: {} que no le pertenece", usuarioId, vehiculoId);
             throw new AccesoNoPermitidoException("El vehiculo no pertenece a este usuario");
         }
 
@@ -58,7 +59,7 @@ public class DerechoAccesoServiceImpl implements DerechoAccesoService {
                 .activo(true)
                 .build();
 
-        log.info("Derecho permanente creado correctamente para usuario id: {} vehiculo id: {}", usuarioId, vehiculoId);
+        log.info("Derecho permanente creado para usuario id: {} vehiculo id: {}", usuarioId, vehiculoId);
         return derechoAccesoRepository.save(derecho);
     }
 
@@ -67,18 +68,12 @@ public class DerechoAccesoServiceImpl implements DerechoAccesoService {
         log.info("Creando derecho puntual para usuario id: {} vehiculo id: {} fecha: {}", usuarioId, vehiculoId, fecha);
         Usuario usuario = usuarioService.findById(usuarioId);
         validarSolicitudAprobada(usuarioId);
-
-        if (fecha.isBefore(LocalDate.now().minusDays(5)) ||
-                fecha.isAfter(LocalDate.now().plusDays(90))) {
-            log.warn("Fecha invalida para derecho puntual: {}", fecha);
-            throw new FechaNoValidaException("La fecha debe estar entre 5 dias antes y 90 dias despues de hoy");
-        }
+        validarFecha(fecha);
 
         Vehiculo vehiculo = vehiculoRepository.findById(vehiculoId)
                 .orElseThrow(() -> new VehiculoNotFoundException(vehiculoId));
 
         if (!vehiculo.getUsuario().getId().equals(usuarioId)) {
-            log.warn("Usuario id: {} intento crear derecho sobre vehiculo id: {} que no le pertenece", usuarioId, vehiculoId);
             throw new AccesoNoPermitidoException("El vehiculo no pertenece a este usuario");
         }
 
@@ -92,23 +87,43 @@ public class DerechoAccesoServiceImpl implements DerechoAccesoService {
                 .activo(true)
                 .build();
 
-        log.info("Derecho puntual creado correctamente para usuario id: {} vehiculo id: {} fecha: {}", usuarioId, vehiculoId, fecha);
+        return derechoAccesoRepository.save(derecho);
+    }
+
+    @Override
+    public DerechoAcceso crearPuntualInvitado(Long usuarioId, String matricula, LocalDate fecha) {
+        log.info("Creando derecho puntual invitado para usuario id: {} matricula: {} fecha: {}", usuarioId, matricula, fecha);
+        Usuario usuario = usuarioService.findById(usuarioId);
+        validarSolicitudAprobada(usuarioId);
+        validarFecha(fecha);
+        validarLimiteInvitaciones(usuarioId, fecha);
+
+        DerechoAcceso derecho = DerechoAcceso.builder()
+                .usuario(usuario)
+                .vehiculo(null)
+                .matriculaInvitado(matricula.toUpperCase())
+                .tipoDerecho(DerechoAcceso.TipoDerecho.PUNTUAL)
+                .tipoAcred(Vehiculo.TipoAcred.LIBRE)
+                .fechaInicio(fecha)
+                .fechaFin(fecha)
+                .activo(true)
+                .build();
+
+        log.info("Derecho puntual invitado creado para matricula: {} fecha: {}", matricula, fecha);
         return derechoAccesoRepository.save(derecho);
     }
 
     @Override
     public void eliminar(Long derechoId, Long usuarioId) {
-        log.info("Intentando eliminar derecho id: {} del usuario id: {}", derechoId, usuarioId);
+        log.info("Eliminando derecho id: {} del usuario id: {}", derechoId, usuarioId);
         DerechoAcceso derecho = derechoAccesoRepository.findById(derechoId)
                 .orElseThrow(() -> new DerechoAccesoNotFoundException(derechoId));
 
         if (!derecho.getUsuario().getId().equals(usuarioId)) {
-            log.warn("Usuario id: {} intento eliminar derecho id: {} que no le pertenece", usuarioId, derechoId);
             throw new AccesoNoPermitidoException("No tienes permiso para eliminar este derecho");
         }
 
         if (derecho.getTipoAcred() == Vehiculo.TipoAcred.ACREDITADO) {
-            log.warn("Intento de eliminar derecho acreditado id: {}", derechoId);
             throw new AccesoNoPermitidoException("No se pueden eliminar derechos de tipo acreditado");
         }
 
@@ -123,5 +138,30 @@ public class DerechoAccesoServiceImpl implements DerechoAccesoService {
                     log.warn("Usuario id: {} no tiene solicitud aprobada", usuarioId);
                     return new AccesoNoPermitidoException("El usuario no tiene una solicitud aprobada");
                 });
+    }
+
+    private void validarFecha(LocalDate fecha) {
+        LocalDate hoy = LocalDate.now();
+        LocalDate ultimoDiaMesSiguiente = hoy.plusMonths(1).withDayOfMonth(
+                hoy.plusMonths(1).lengthOfMonth()
+        );
+        if (fecha.isBefore(hoy)) {
+            throw new FechaNoValidaException("La fecha no puede ser anterior a hoy");
+        }
+        if (fecha.isAfter(ultimoDiaMesSiguiente)) {
+            throw new FechaNoValidaException("La fecha no puede ser posterior al último día del mes siguiente");
+        }
+    }
+
+    private void validarLimiteInvitaciones(Long usuarioId, LocalDate fecha) {
+        long invitacionesMes = derechoAccesoRepository.countInvitacionesMes(
+                usuarioId, fecha.getYear(), fecha.getMonthValue()
+        );
+        if (invitacionesMes >= MAX_INVITACIONES_MES) {
+            throw new AccesoNoPermitidoException(
+                    "Has alcanzado el límite de " + MAX_INVITACIONES_MES + " invitaciones para este mes"
+            );
+        }
+        log.info("Usuario id: {} tiene {} invitaciones este mes", usuarioId, invitacionesMes);
     }
 }

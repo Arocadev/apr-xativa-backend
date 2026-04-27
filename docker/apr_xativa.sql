@@ -57,15 +57,16 @@ CREATE TABLE solicitudes (
 );
 
 CREATE TABLE derechos_acceso (
-                                 id            BIGINT      PRIMARY KEY AUTO_INCREMENT,
-                                 usuario_id    BIGINT      NOT NULL,
-                                 vehiculo_id   BIGINT      NOT NULL,
-                                 tipo_derecho  ENUM('PERMANENTE','PUNTUAL') NOT NULL,
-                                 tipo_acred    ENUM('LIBRE','ACREDITADO')   NOT NULL,
-                                 fecha_inicio  DATE        NOT NULL,
-                                 fecha_fin     DATE        NOT NULL,
-                                 activo        BOOLEAN     NOT NULL DEFAULT TRUE,
-                                 created_at    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                 id                 BIGINT      PRIMARY KEY AUTO_INCREMENT,
+                                 usuario_id         BIGINT      NOT NULL,
+                                 vehiculo_id        BIGINT      NULL,
+                                 matricula_invitado VARCHAR(10) NULL,
+                                 tipo_derecho       ENUM('PERMANENTE','PUNTUAL') NOT NULL,
+                                 tipo_acred         ENUM('LIBRE','ACREDITADO')   NOT NULL,
+                                 fecha_inicio       DATE        NOT NULL,
+                                 fecha_fin          DATE        NOT NULL,
+                                 activo             BOOLEAN     NOT NULL DEFAULT TRUE,
+                                 created_at         TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                  CONSTRAINT fk_derecho_usuario  FOREIGN KEY (usuario_id)
                                      REFERENCES usuarios(id) ON DELETE CASCADE,
                                  CONSTRAINT fk_derecho_vehiculo FOREIGN KEY (vehiculo_id)

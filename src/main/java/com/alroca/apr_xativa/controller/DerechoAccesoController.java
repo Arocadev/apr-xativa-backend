@@ -52,6 +52,17 @@ public class DerechoAccesoController {
         ));
     }
 
+    @PostMapping("/puntual/invitado")
+    public ResponseEntity<DerechoAccesoResponseDTO> crearPuntualInvitado(
+            @RequestBody Map<String, String> body) {
+        Long usuarioId = securityUtils.getUsuarioAutenticado().getId();
+        String matricula = body.get("matricula");
+        LocalDate fecha = LocalDate.parse(body.get("fecha"));
+        return ResponseEntity.ok(derechoAccesoMapper.toResponse(
+                derechoAccesoService.crearPuntualInvitado(usuarioId, matricula, fecha)
+        ));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         Long usuarioId = securityUtils.getUsuarioAutenticado().getId();

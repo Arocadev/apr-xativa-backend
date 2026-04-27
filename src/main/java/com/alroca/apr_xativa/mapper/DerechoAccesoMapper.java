@@ -11,14 +11,21 @@ public class DerechoAccesoMapper {
         DerechoAccesoResponseDTO dto = new DerechoAccesoResponseDTO();
         dto.setId(derecho.getId());
         dto.setUsuarioId(derecho.getUsuario().getId());
-        dto.setVehiculoId(derecho.getVehiculo().getId());
-        dto.setMatricula(derecho.getVehiculo().getMatricula());
         dto.setTipoDerecho(derecho.getTipoDerecho().name());
         dto.setTipoAcred(derecho.getTipoAcred().name());
         dto.setFechaInicio(derecho.getFechaInicio());
         dto.setFechaFin(derecho.getFechaFin());
         dto.setActivo(derecho.isActivo());
         dto.setCreatedAt(derecho.getCreatedAt());
+        dto.setMatriculaInvitado(derecho.getMatriculaInvitado());
+
+        if (derecho.getVehiculo() != null) {
+            dto.setVehiculoId(derecho.getVehiculo().getId());
+            dto.setMatricula(derecho.getVehiculo().getMatricula());
+        } else {
+            dto.setMatricula(derecho.getMatriculaInvitado());
+        }
+
         return dto;
     }
 }
