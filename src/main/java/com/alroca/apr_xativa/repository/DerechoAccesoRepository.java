@@ -4,6 +4,8 @@ import com.alroca.apr_xativa.entity.DerechoAcceso;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDate;
 import java.util.List;
 
 public interface DerechoAccesoRepository extends JpaRepository<DerechoAcceso, Long> {
@@ -23,4 +25,8 @@ public interface DerechoAccesoRepository extends JpaRepository<DerechoAcceso, Lo
             @Param("anyo") int anyo,
             @Param("mes") int mes
     );
+
+    @Query("SELECT d FROM DerechoAcceso d WHERE d.activo = true " +
+            "AND d.fechaInicio <= :hoy AND d.fechaFin >= :hoy")
+    List<DerechoAcceso> findDerechosActivosHoy(@Param("hoy") LocalDate hoy);
 }
