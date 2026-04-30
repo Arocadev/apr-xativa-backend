@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 public class SolicitudResponseDTO {
     private Long id;
     private Long usuarioId;
+    private String usuarioDni;
+    private String usuarioNombre;
     private String estado;
     private String observaciones;
     private Long adminId;

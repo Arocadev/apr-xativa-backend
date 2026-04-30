@@ -11,6 +11,8 @@ public class SolicitudMapper {
         SolicitudResponseDTO dto = new SolicitudResponseDTO();
         dto.setId(solicitud.getId());
         dto.setUsuarioId(solicitud.getUsuario().getId());
+        dto.setUsuarioDni(solicitud.getUsuario().getDni());
+        dto.setUsuarioNombre(solicitud.getUsuario().getNombre() + " " + solicitud.getUsuario().getApellidos());
         dto.setEstado(solicitud.getEstado().name());
         dto.setObservaciones(solicitud.getObservaciones());
         dto.setAdminId(solicitud.getAdmin() != null ? solicitud.getAdmin().getId() : null);

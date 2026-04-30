@@ -29,6 +29,13 @@ public class UsuarioController {
         ));
     }
 
+    @PostMapping("/admin/registro")
+    public ResponseEntity<UsuarioResponseDTO> registroDesdeAdmin(@Valid @RequestBody UsuarioRequestDTO request) {
+        return ResponseEntity.ok(usuarioMapper.toResponse(
+                usuarioService.registrarDesdeAdmin(usuarioMapper.toEntity(request))
+        ));
+    }
+
     @GetMapping("/me")
     public ResponseEntity<UsuarioResponseDTO> me() {
         return ResponseEntity.ok(usuarioMapper.toResponse(

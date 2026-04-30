@@ -81,6 +81,24 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    public Usuario registrarDesdeAdmin(Usuario usuario) {
+        log.info("Registrando usuario desde admin con DNI: {}", usuario.getDni());
+        if (!ValidacionUtils.esDniValido(usuario.getDni())) {
+            throw new IllegalArgumentException("Formato de DNI o NIE incorrecto: " + usuario.getDni());
+        }
+        if (usuarioRepository.existsByDni(usuario.getDni())) {
+            throw new DuplicadoException("Ya existe un usuario con el DNI: " + usuario.getDni());
+        }
+        if (usuarioRepository.existsByEmail(usuario.getEmail())) {
+            throw new DuplicadoException("Ya existe un usuario con el email: " + usuario.getEmail());
+        }
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        usuario.setRol(Usuario.Rol.USER);
+        usuario.setActivo(true);
+        return usuarioRepository.save(usuario);
+    }
+
+    @Override
     public void desactivar(Long id) {
         log.info("Desactivando usuario con id: {}", id);
         Usuario usuario = findById(id);

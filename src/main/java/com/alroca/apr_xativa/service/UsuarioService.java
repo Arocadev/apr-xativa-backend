@@ -12,4 +12,5 @@ public interface UsuarioService {
     void desactivar(Long id);
     void reactivar(Long id);
     void cambiarPassword(Long id, String passwordActual, String passwordNueva);
+    Usuario registrarDesdeAdmin(Usuario usuario);
 }
