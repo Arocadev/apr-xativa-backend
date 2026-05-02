@@ -5,8 +5,9 @@ import java.util.List;
 
 public interface VehiculoService {
     List<Vehiculo> findByUsuario(Long usuarioId);
-    Vehiculo alta(Long usuarioId, String matricula, Vehiculo.TipoAcred tipoAcred);
-    void baja(Long vehiculoId, Long usuarioId);
     List<Vehiculo> findAllByUsuario(Long usuarioId);
     List<Vehiculo> findAll();
+    Vehiculo alta(Long usuarioId, String matricula, Vehiculo.TipoAcred tipoAcred);
+    void baja(Long vehiculoId, Long usuarioId);
+    void reactivar(Long vehiculoId, Long usuarioId);
 }

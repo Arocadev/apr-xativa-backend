@@ -24,7 +24,7 @@ public class VehiculoServiceImpl implements VehiculoService {
 
     @Override
     public List<Vehiculo> findByUsuario(Long usuarioId) {
-        log.debug("Listando vehiculos del usuario id: {}", usuarioId);
+        log.debug("Listando vehiculos activos del usuario id: {}", usuarioId);
         return vehiculoRepository.findByUsuarioIdAndActivoTrue(usuarioId);
     }
 
@@ -73,5 +73,19 @@ public class VehiculoServiceImpl implements VehiculoService {
         vehiculo.setActivo(false);
         vehiculoRepository.save(vehiculo);
         log.info("Vehiculo id: {} dado de baja correctamente", vehiculoId);
+    }
+
+    @Override
+    public void reactivar(Long vehiculoId, Long usuarioId) {
+        log.info("Intentando reactivar vehiculo id: {} del usuario id: {}", vehiculoId, usuarioId);
+        Vehiculo vehiculo = vehiculoRepository.findById(vehiculoId)
+                .orElseThrow(() -> new VehiculoNotFoundException(vehiculoId));
+        if (!vehiculo.getUsuario().getId().equals(usuarioId)) {
+            log.warn("Usuario id: {} intentó reactivar vehiculo id: {} que no le pertenece", usuarioId, vehiculoId);
+            throw new AccesoNoPermitidoException("No tienes permiso para reactivar este vehiculo");
+        }
+        vehiculo.setActivo(true);
+        vehiculoRepository.save(vehiculo);
+        log.info("Vehiculo id: {} reactivado correctamente", vehiculoId);
     }
 }

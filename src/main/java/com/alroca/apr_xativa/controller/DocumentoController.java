@@ -33,7 +33,14 @@ public class DocumentoController {
     public ResponseEntity<Void> subirDocumento(
             @RequestParam("archivo") MultipartFile archivo) throws IOException {
         Long usuarioId = securityUtils.getUsuarioAutenticado().getId();
-        String ruta = "uploads/" + usuarioId + "_" + archivo.getOriginalFilename();
+        String dni = usuarioService.findById(usuarioId).getDni();
+        String extension = "";
+        String originalFilename = archivo.getOriginalFilename();
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        }
+        String nombreFinal = dni + extension;
+        String ruta = "uploads/" + nombreFinal;
         Path path = Paths.get(ruta);
         Files.createDirectories(path.getParent());
         Files.write(path, archivo.getBytes());
@@ -61,7 +68,7 @@ public class DocumentoController {
         String contentType = Files.probeContentType(path);
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType != null ? contentType : "application/octet-stream"))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + path.getFileName() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + path.getFileName() + "\"")
                 .body(resource);
     }
 }
