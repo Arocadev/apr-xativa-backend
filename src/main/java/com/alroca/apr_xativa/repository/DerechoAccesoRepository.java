@@ -2,6 +2,7 @@ package com.alroca.apr_xativa.repository;
 
 import com.alroca.apr_xativa.entity.DerechoAcceso;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -29,4 +30,8 @@ public interface DerechoAccesoRepository extends JpaRepository<DerechoAcceso, Lo
     @Query("SELECT d FROM DerechoAcceso d WHERE d.activo = true " +
             "AND d.fechaInicio <= :hoy AND d.fechaFin >= :hoy")
     List<DerechoAcceso> findDerechosActivosHoy(@Param("hoy") LocalDate hoy);
+
+    @Modifying
+    @Query("UPDATE DerechoAcceso d SET d.activo = false WHERE d.fechaFin < :hoy AND d.activo = true")
+    int desactivarExpirados(@Param("hoy") LocalDate hoy);
 }

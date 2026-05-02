@@ -1,5 +1,6 @@
 package com.alroca.apr_xativa.service;
 
+import com.alroca.apr_xativa.repository.DerechoAccesoRepository;
 import com.alroca.apr_xativa.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,6 +18,7 @@ import java.util.List;
 public class TareasProgramadasService {
 
     private final UsuarioRepository usuarioRepository;
+    private final DerechoAccesoRepository derechoAccesoRepository;
 
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional
@@ -37,8 +40,14 @@ public class TareasProgramadasService {
     @Transactional
     public void renovarDerechosPuntuales() {
         log.info("Ejecutando tarea: renovar derechos puntuales mensuales");
-        // Los derechos puntuales se renuevan automáticamente porque el backend
-        // cuenta los usados en el mes actual — no hace falta resetear nada
         log.info("Tarea completada: derechos puntuales renovados");
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    @Transactional
+    public void desactivarDerechosExpirados() {
+        LocalDate hoy = LocalDate.now();
+        int actualizados = derechoAccesoRepository.desactivarExpirados(hoy);
+        log.info("Derechos expirados desactivados: {}", actualizados);
     }
 }
