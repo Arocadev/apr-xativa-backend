@@ -84,10 +84,10 @@ CREATE INDEX idx_derechos_vehiculo   ON derechos_acceso (vehiculo_id);
 CREATE INDEX idx_derechos_fecha      ON derechos_acceso (fecha_inicio, fecha_fin);
 
 INSERT INTO usuarios (dni, nombre, apellidos, email, password, rol, tipo) VALUES
-                                                                              ('00000001A', 'Admin',       'Sistema APR',   'admin@apr-xativa.es', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lsiS', 'ADMIN', 'A.1'),
-                                                                              ('12345678B', 'Carlos',      'García López',  'carlos@email.com',    '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lsiS', 'USER',  'A.1'),
-                                                                              ('87654321C', 'María',       'Martínez Ruiz', 'maria@email.com',     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lsiS', 'USER',  'B'),
-                                                                              ('11111111D', 'Restaurante', 'El Mercat SL',  'mercat@email.com',    '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lsiS', 'USER',  'I'),
-                                                                              ('22222222E', 'Hotel',       'Xàtiva Palace', 'hotel@email.com',     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lsiS', 'USER',  'H.2');
+                                                                              ('00000001A', 'Admin',       'Sistema APR',   'admin@apr-xativa.es', '$2a$10$FHBO3Z.5bL7xm0KZtMl6OuTNAwi1Pmrmu9vRgkZ8oo0V57SLE1cUa', 'ADMIN', 'A.1'),
+                                                                              ('12345678B', 'Carlos',      'García López',  'carlos@email.com',    '$2a$10$FHBO3Z.5bL7xm0KZtMl6OuTNAwi1Pmrmu9vRgkZ8oo0V57SLE1cUa', 'USER',  'A.1'),
+                                                                              ('87654321C', 'María',       'Martínez Ruiz', 'maria@email.com',     '$2a$10$FHBO3Z.5bL7xm0KZtMl6OuTNAwi1Pmrmu9vRgkZ8oo0V57SLE1cUa', 'USER',  'B'),
+                                                                              ('11111111D', 'Restaurante', 'El Mercat SL',  'mercat@email.com',    '$2a$10$FHBO3Z.5bL7xm0KZtMl6OuTNAwi1Pmrmu9vRgkZ8oo0V57SLE1cUa', 'USER',  'I'),
+                                                                              ('22222222E', 'Hotel',       'Xàtiva Palace', 'hotel@email.com',     '$2a$10$FHBO3Z.5bL7xm0KZtMl6OuTNAwi1Pmrmu9vRgkZ8oo0V57SLE1cUa', 'USER',  'H.2');
 
 UPDATE usuarios SET num_plazas = 20 WHERE dni = '22222222E';
