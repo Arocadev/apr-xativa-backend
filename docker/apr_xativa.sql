@@ -85,6 +85,20 @@ CREATE TABLE refresh_tokens (
                                     REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
+CREATE TABLE auditoria_logs (
+                                id                  BIGINT       PRIMARY KEY AUTO_INCREMENT,
+                                evento              VARCHAR(50)  NOT NULL,
+                                usuario_id          BIGINT       NULL,
+                                usuario_dni         VARCHAR(10)  NULL,
+                                detalle             VARCHAR(500) NULL,
+                                realizado_por_id    BIGINT       NULL,
+                                realizado_por_dni   VARCHAR(10)  NULL,
+                                created_at          DATETIME     NOT NULL,
+                                INDEX idx_auditoria_usuario (usuario_id),
+                                INDEX idx_auditoria_evento  (evento),
+                                INDEX idx_auditoria_fecha   (created_at)
+);
+
 CREATE INDEX idx_vehiculos_usuario   ON vehiculos       (usuario_id);
 CREATE INDEX idx_vehiculos_matricula ON vehiculos       (matricula);
 CREATE INDEX idx_documentos_usuario  ON documentos      (usuario_id);

@@ -1,5 +1,6 @@
 package com.alroca.apr_xativa.service;
 
+import com.alroca.apr_xativa.entity.AuditoriaLog;
 import com.alroca.apr_xativa.entity.Usuario;
 import com.alroca.apr_xativa.entity.Vehiculo;
 import com.alroca.apr_xativa.exception.AccesoNoPermitidoException;
@@ -23,6 +24,7 @@ public class VehiculoServiceImpl implements VehiculoService {
 
     private final VehiculoRepository vehiculoRepository;
     private final UsuarioService usuarioService;
+    private final AuditoriaService auditoriaService;
 
     @Override
     public List<Vehiculo> findByUsuario(Long usuarioId) {
@@ -66,8 +68,13 @@ public class VehiculoServiceImpl implements VehiculoService {
                 .tipoAcred(tipoAcred)
                 .activo(true)
                 .build();
+        Vehiculo guardado = vehiculoRepository.save(vehiculo);
+
+        auditoriaService.registrar(AuditoriaLog.Evento.VEHICULO_ALTA, usuario,
+                "Vehículo dado de alta: " + matricula.toUpperCase());
+
         log.info("Vehiculo dado de alta correctamente: {} para usuario id: {}", matricula, usuarioId);
-        return vehiculoRepository.save(vehiculo);
+        return guardado;
     }
 
     @Override
@@ -81,6 +88,10 @@ public class VehiculoServiceImpl implements VehiculoService {
         }
         vehiculo.setActivo(false);
         vehiculoRepository.save(vehiculo);
+
+        auditoriaService.registrar(AuditoriaLog.Evento.VEHICULO_BAJA, vehiculo.getUsuario(),
+                "Vehículo dado de baja: " + vehiculo.getMatricula());
+
         log.info("Vehiculo id: {} dado de baja correctamente", vehiculoId);
     }
 

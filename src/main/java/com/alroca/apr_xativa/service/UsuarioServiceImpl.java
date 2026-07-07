@@ -1,5 +1,6 @@
 package com.alroca.apr_xativa.service;
 
+import com.alroca.apr_xativa.entity.AuditoriaLog;
 import com.alroca.apr_xativa.entity.Solicitud;
 import com.alroca.apr_xativa.entity.Usuario;
 import com.alroca.apr_xativa.exception.DuplicadoException;
@@ -24,6 +25,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final SolicitudRepository solicitudRepository;
+    private final AuditoriaService auditoriaService;
 
     @Override
     public Usuario findByEmail(String email) {
@@ -84,6 +86,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         solicitud.setEstado(Solicitud.Estado.PENDIENTE);
         solicitudRepository.save(solicitud);
 
+        auditoriaService.registrar(AuditoriaLog.Evento.REGISTRO_USUARIO, usuarioGuardado,
+                "Nuevo registro: " + usuarioGuardado.getDni());
+
         log.info("Usuario registrado correctamente con DNI: {}", usuario.getDni());
         return usuarioGuardado;
     }
@@ -103,7 +108,12 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuario.setRol(Usuario.Rol.USER);
         usuario.setActivo(true);
-        return usuarioRepository.save(usuario);
+        Usuario usuarioGuardado = usuarioRepository.save(usuario);
+
+        auditoriaService.registrar(AuditoriaLog.Evento.REGISTRO_USUARIO, usuarioGuardado,
+                "Registro desde admin: " + usuarioGuardado.getDni());
+
+        return usuarioGuardado;
     }
 
     @Override

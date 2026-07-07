@@ -2,10 +2,12 @@ package com.alroca.apr_xativa.controller;
 
 import com.alroca.apr_xativa.dto.AuthResponse;
 import com.alroca.apr_xativa.dto.LoginRequest;
+import com.alroca.apr_xativa.entity.AuditoriaLog;
 import com.alroca.apr_xativa.entity.RefreshToken;
 import com.alroca.apr_xativa.entity.Usuario;
 import com.alroca.apr_xativa.repository.UsuarioRepository;
 import com.alroca.apr_xativa.security.JwtService;
+import com.alroca.apr_xativa.service.AuditoriaService;
 import com.alroca.apr_xativa.service.RefreshTokenService;
 import com.alroca.apr_xativa.utils.SecurityUtils;
 import jakarta.validation.Valid;
@@ -30,6 +32,7 @@ public class AuthController {
     private final UsuarioRepository usuarioRepository;
     private final RefreshTokenService refreshTokenService;
     private final SecurityUtils securityUtils;
+    private final AuditoriaService auditoriaService;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
@@ -42,6 +45,8 @@ public class AuthController {
 
         Usuario usuario = usuarioRepository.findByDni(request.getDni()).orElseThrow();
         RefreshToken refreshToken = refreshTokenService.crear(usuario);
+
+        auditoriaService.registrar(AuditoriaLog.Evento.LOGIN, usuario, "Login exitoso");
 
         return ResponseEntity.ok(new AuthResponse(
                 token,
@@ -74,8 +79,9 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
-        Long usuarioId = securityUtils.getUsuarioAutenticado().getId();
-        refreshTokenService.revocarTodos(usuarioId);
+        Usuario usuario = securityUtils.getUsuarioAutenticado();
+        refreshTokenService.revocarTodos(usuario.getId());
+        auditoriaService.registrar(AuditoriaLog.Evento.LOGOUT, usuario, "Logout");
         return ResponseEntity.noContent().build();
     }
 }

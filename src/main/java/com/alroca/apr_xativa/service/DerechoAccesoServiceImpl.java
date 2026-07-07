@@ -1,5 +1,6 @@
 package com.alroca.apr_xativa.service;
 
+import com.alroca.apr_xativa.entity.AuditoriaLog;
 import com.alroca.apr_xativa.entity.DerechoAcceso;
 import com.alroca.apr_xativa.entity.Solicitud;
 import com.alroca.apr_xativa.entity.Usuario;
@@ -31,6 +32,7 @@ public class DerechoAccesoServiceImpl implements DerechoAccesoService {
     private final VehiculoRepository vehiculoRepository;
     private final SolicitudRepository solicitudRepository;
     private final UsuarioService usuarioService;
+    private final AuditoriaService auditoriaService;
 
     @Override
     public List<DerechoAcceso> findByUsuario(Long usuarioId) {
@@ -67,8 +69,13 @@ public class DerechoAccesoServiceImpl implements DerechoAccesoService {
                 .activo(true)
                 .build();
 
+        DerechoAcceso guardado = derechoAccesoRepository.save(derecho);
+
+        auditoriaService.registrar(AuditoriaLog.Evento.DERECHO_PERMANENTE_CREADO, usuario,
+                "Derecho permanente creado para vehículo: " + vehiculo.getMatricula());
+
         log.info("Derecho permanente creado para usuario id: {} vehiculo id: {}", usuarioId, vehiculoId);
-        return derechoAccesoRepository.save(derecho);
+        return guardado;
     }
 
     @Override
@@ -95,7 +102,12 @@ public class DerechoAccesoServiceImpl implements DerechoAccesoService {
                 .activo(true)
                 .build();
 
-        return derechoAccesoRepository.save(derecho);
+        DerechoAcceso guardado = derechoAccesoRepository.save(derecho);
+
+        auditoriaService.registrar(AuditoriaLog.Evento.DERECHO_PUNTUAL_CREADO, usuario,
+                "Derecho puntual creado per a " + vehiculo.getMatricula() + " el " + fecha);
+
+        return guardado;
     }
 
     @Override
@@ -117,8 +129,13 @@ public class DerechoAccesoServiceImpl implements DerechoAccesoService {
                 .activo(true)
                 .build();
 
+        DerechoAcceso guardado = derechoAccesoRepository.save(derecho);
+
+        auditoriaService.registrar(AuditoriaLog.Evento.DERECHO_INVITADO_CREADO, usuario,
+                "Derecho invitado creat per a " + matricula.toUpperCase() + " el " + fecha);
+
         log.info("Derecho puntual invitado creado para matricula: {} fecha: {}", matricula, fecha);
-        return derechoAccesoRepository.save(derecho);
+        return guardado;
     }
 
     @Override
@@ -137,6 +154,10 @@ public class DerechoAccesoServiceImpl implements DerechoAccesoService {
 
         derecho.setActivo(false);
         derechoAccesoRepository.save(derecho);
+
+        auditoriaService.registrar(AuditoriaLog.Evento.DERECHO_ELIMINADO, derecho.getUsuario(),
+                "Derecho id " + derechoId + " eliminat");
+
         log.info("Derecho id: {} eliminado correctamente", derechoId);
     }
 

@@ -1,5 +1,6 @@
 package com.alroca.apr_xativa.service;
 
+import com.alroca.apr_xativa.entity.AuditoriaLog;
 import com.alroca.apr_xativa.entity.Solicitud;
 import com.alroca.apr_xativa.entity.Usuario;
 import com.alroca.apr_xativa.exception.DuplicadoException;
@@ -21,6 +22,7 @@ public class SolicitudServiceImpl implements SolicitudService {
 
     private final SolicitudRepository solicitudRepository;
     private final UsuarioService usuarioService;
+    private final AuditoriaService auditoriaService;
 
     @Override
     public Solicitud crear(Long usuarioId) {
@@ -73,8 +75,16 @@ public class SolicitudServiceImpl implements SolicitudService {
         solicitud.setAdmin(admin);
         solicitud.setGestionadaAt(LocalDateTime.now());
         usuarioService.reactivar(solicitud.getUsuario().getId());
+
+        Solicitud guardada = solicitudRepository.save(solicitud);
+
+        auditoriaService.registrar(AuditoriaLog.Evento.SOLICITUD_APROBADA,
+                solicitud.getUsuario(),
+                "Solicitud " + solicitudId + " aprobada",
+                admin);
+
         log.info("Solicitud id: {} aprobada correctamente por admin id: {}", solicitudId, adminId);
-        return solicitudRepository.save(solicitud);
+        return guardada;
     }
 
     @Override
@@ -87,8 +97,16 @@ public class SolicitudServiceImpl implements SolicitudService {
         solicitud.setAdmin(admin);
         solicitud.setObservaciones(observaciones);
         solicitud.setGestionadaAt(LocalDateTime.now());
+
+        Solicitud guardada = solicitudRepository.save(solicitud);
+
+        auditoriaService.registrar(AuditoriaLog.Evento.SOLICITUD_RECHAZADA,
+                solicitud.getUsuario(),
+                "Solicitud " + solicitudId + " rechazada. Motivo: " + observaciones,
+                admin);
+
         log.info("Solicitud id: {} rechazada correctamente por admin id: {}", solicitudId, adminId);
-        return solicitudRepository.save(solicitud);
+        return guardada;
     }
 
     @Override
