@@ -3,6 +3,7 @@ package com.alroca.apr_xativa.service;
 import com.alroca.apr_xativa.entity.Usuario;
 import com.alroca.apr_xativa.exception.DuplicadoException;
 import com.alroca.apr_xativa.exception.UsuarioNotFoundException;
+import com.alroca.apr_xativa.repository.SolicitudRepository;
 import com.alroca.apr_xativa.repository.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import com.alroca.apr_xativa.entity.Solicitud;
 
 import java.util.Optional;
 
@@ -26,6 +28,9 @@ class UsuarioServiceImplTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private SolicitudRepository solicitudRepository;
 
     @InjectMocks
     private UsuarioServiceImpl usuarioService;
@@ -72,11 +77,13 @@ class UsuarioServiceImplTest {
         when(usuarioRepository.existsByEmail("carlos@email.com")).thenReturn(false);
         when(passwordEncoder.encode(any())).thenReturn("hashedPassword");
         when(usuarioRepository.save(any())).thenReturn(usuario);
+        when(solicitudRepository.save(any(Solicitud.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Usuario resultado = usuarioService.registrar(usuario);
 
         assertNotNull(resultado);
         verify(usuarioRepository).save(any());
+        verify(solicitudRepository).save(any(Solicitud.class));
     }
 
     @Test

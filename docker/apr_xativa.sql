@@ -74,6 +74,17 @@ CREATE TABLE derechos_acceso (
                                  CONSTRAINT chk_fechas CHECK (fecha_fin >= fecha_inicio)
 );
 
+CREATE TABLE refresh_tokens (
+                                id          BIGINT       PRIMARY KEY AUTO_INCREMENT,
+                                token       VARCHAR(512) NOT NULL UNIQUE,
+                                usuario_id  BIGINT       NOT NULL,
+                                expires_at  DATETIME     NOT NULL,
+                                revocado    BOOLEAN      NOT NULL DEFAULT FALSE,
+                                created_at  DATETIME     NOT NULL,
+                                CONSTRAINT fk_refresh_usuario FOREIGN KEY (usuario_id)
+                                    REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
 CREATE INDEX idx_vehiculos_usuario   ON vehiculos       (usuario_id);
 CREATE INDEX idx_vehiculos_matricula ON vehiculos       (matricula);
 CREATE INDEX idx_documentos_usuario  ON documentos      (usuario_id);
@@ -82,6 +93,8 @@ CREATE INDEX idx_solicitudes_estado  ON solicitudes     (estado);
 CREATE INDEX idx_derechos_usuario    ON derechos_acceso (usuario_id);
 CREATE INDEX idx_derechos_vehiculo   ON derechos_acceso (vehiculo_id);
 CREATE INDEX idx_derechos_fecha      ON derechos_acceso (fecha_inicio, fecha_fin);
+CREATE INDEX idx_refresh_token       ON refresh_tokens  (token);
+CREATE INDEX idx_refresh_usuario     ON refresh_tokens  (usuario_id);
 
 INSERT INTO usuarios (dni, nombre, apellidos, email, password, rol, tipo) VALUES
                                                                               ('00000001A', 'Admin',       'Sistema APR',   'admin@apr-xativa.es', '$2a$10$FHBO3Z.5bL7xm0KZtMl6OuTNAwi1Pmrmu9vRgkZ8oo0V57SLE1cUa', 'ADMIN', 'A.1'),
