@@ -9,6 +9,8 @@ import com.alroca.apr_xativa.repository.VehiculoRepository;
 import com.alroca.apr_xativa.utils.ValidacionUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +39,13 @@ public class VehiculoServiceImpl implements VehiculoService {
     @Transactional(readOnly = true)
     public List<Vehiculo> findAll() {
         return vehiculoRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Vehiculo> findAllPaginado(Pageable pageable) {
+        log.info("Listando vehiculos paginados: pagina={} size={}", pageable.getPageNumber(), pageable.getPageSize());
+        return vehiculoRepository.findAll(pageable);
     }
 
     @Override

@@ -8,6 +8,10 @@ import com.alroca.apr_xativa.service.VehiculoService;
 import com.alroca.apr_xativa.utils.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +38,15 @@ public class VehiculoController {
     }
 
     @GetMapping("/todos")
-    public ResponseEntity<List<VehiculoResponseDTO>> listarTodos() {
+    public ResponseEntity<?> listarTodos(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        if (page != null && size != null) {
+            Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+            Page<VehiculoResponseDTO> resultado = vehiculoService.findAllPaginado(pageable)
+                    .map(vehiculoMapper::toResponse);
+            return ResponseEntity.ok(resultado);
+        }
         return ResponseEntity.ok(
                 vehiculoService.findAll().stream()
                         .map(vehiculoMapper::toResponse)

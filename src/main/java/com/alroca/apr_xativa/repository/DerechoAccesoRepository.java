@@ -1,6 +1,8 @@
 package com.alroca.apr_xativa.repository;
 
 import com.alroca.apr_xativa.entity.DerechoAcceso;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,6 +14,8 @@ import java.util.List;
 public interface DerechoAccesoRepository extends JpaRepository<DerechoAcceso, Long> {
 
     List<DerechoAcceso> findByUsuarioIdAndActivoTrue(Long usuarioId);
+
+    Page<DerechoAcceso> findByUsuarioIdAndActivoTrue(Long usuarioId, Pageable pageable);
 
     List<DerechoAcceso> findByVehiculoIdAndActivoTrue(Long vehiculoId);
 

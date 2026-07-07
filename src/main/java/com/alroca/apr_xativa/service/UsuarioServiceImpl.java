@@ -9,6 +9,8 @@ import com.alroca.apr_xativa.repository.UsuarioRepository;
 import com.alroca.apr_xativa.utils.ValidacionUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +50,12 @@ public class UsuarioServiceImpl implements UsuarioService {
     public List<Usuario> findAll() {
         log.info("Listando todos los usuarios");
         return usuarioRepository.findAll();
+    }
+
+    @Override
+    public Page<Usuario> findAllPaginado(Pageable pageable) {
+        log.info("Listando usuarios paginados: pagina={} size={}", pageable.getPageNumber(), pageable.getPageSize());
+        return usuarioRepository.findAll(pageable);
     }
 
     @Override

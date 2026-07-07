@@ -7,6 +7,10 @@ import com.alroca.apr_xativa.service.UsuarioService;
 import com.alroca.apr_xativa.utils.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,12 +48,19 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UsuarioResponseDTO>> listar() {
-        return ResponseEntity.ok(
-                usuarioService.findAll().stream()
-                        .map(usuarioMapper::toResponse)
-                        .toList()
-        );
+    public ResponseEntity<?> listar(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        if (page != null && size != null) {
+            Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+            Page<UsuarioResponseDTO> resultado = usuarioService.findAllPaginado(pageable)
+                    .map(usuarioMapper::toResponse);
+            return ResponseEntity.ok(resultado);
+        }
+        List<UsuarioResponseDTO> resultado = usuarioService.findAll().stream()
+                .map(usuarioMapper::toResponse)
+                .toList();
+        return ResponseEntity.ok(resultado);
     }
 
     @DeleteMapping("/{id}")

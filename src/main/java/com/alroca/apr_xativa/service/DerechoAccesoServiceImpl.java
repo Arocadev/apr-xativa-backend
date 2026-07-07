@@ -13,6 +13,8 @@ import com.alroca.apr_xativa.repository.SolicitudRepository;
 import com.alroca.apr_xativa.repository.VehiculoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -34,6 +36,12 @@ public class DerechoAccesoServiceImpl implements DerechoAccesoService {
     public List<DerechoAcceso> findByUsuario(Long usuarioId) {
         log.debug("Listando derechos de acceso del usuario id: {}", usuarioId);
         return derechoAccesoRepository.findByUsuarioIdAndActivoTrue(usuarioId);
+    }
+
+    @Override
+    public Page<DerechoAcceso> findByUsuarioPaginado(Long usuarioId, Pageable pageable) {
+        log.debug("Listando derechos paginados del usuario id: {}", usuarioId);
+        return derechoAccesoRepository.findByUsuarioIdAndActivoTrue(usuarioId, pageable);
     }
 
     @Override

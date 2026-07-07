@@ -6,6 +6,10 @@ import com.alroca.apr_xativa.mapper.SolicitudMapper;
 import com.alroca.apr_xativa.service.SolicitudService;
 import com.alroca.apr_xativa.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +44,15 @@ public class SolicitudController {
     }
 
     @GetMapping("/pendientes")
-    public ResponseEntity<List<SolicitudResponseDTO>> pendientes() {
+    public ResponseEntity<?> pendientes(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        if (page != null && size != null) {
+            Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+            Page<SolicitudResponseDTO> resultado = solicitudService.findPendientesPaginado(pageable)
+                    .map(solicitudMapper::toResponse);
+            return ResponseEntity.ok(resultado);
+        }
         return ResponseEntity.ok(
                 solicitudService.findPendientes().stream()
                         .map(solicitudMapper::toResponse)
@@ -55,13 +67,20 @@ public class SolicitudController {
         if (solicitudes.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-
         Solicitud ultima = solicitudes.get(solicitudes.size() - 1);
         return ResponseEntity.ok(ultima);
     }
 
     @GetMapping("/todas")
-    public ResponseEntity<List<SolicitudResponseDTO>> todas() {
+    public ResponseEntity<?> todas(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        if (page != null && size != null) {
+            Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+            Page<SolicitudResponseDTO> resultado = solicitudService.findAllPaginado(pageable)
+                    .map(solicitudMapper::toResponse);
+            return ResponseEntity.ok(resultado);
+        }
         return ResponseEntity.ok(
                 solicitudService.findAll().stream()
                         .map(solicitudMapper::toResponse)

@@ -7,6 +7,8 @@ import com.alroca.apr_xativa.exception.SolicitudNotFoundException;
 import com.alroca.apr_xativa.repository.SolicitudRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -47,6 +49,18 @@ public class SolicitudServiceImpl implements SolicitudService {
     public List<Solicitud> findPendientes() {
         log.debug("Listando solicitudes pendientes");
         return solicitudRepository.findByEstado(Solicitud.Estado.PENDIENTE);
+    }
+
+    @Override
+    public Page<Solicitud> findAllPaginado(Pageable pageable) {
+        log.info("Listando solicitudes paginadas: pagina={} size={}", pageable.getPageNumber(), pageable.getPageSize());
+        return solicitudRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Solicitud> findPendientesPaginado(Pageable pageable) {
+        log.info("Listando solicitudes pendientes paginadas");
+        return solicitudRepository.findByEstado(Solicitud.Estado.PENDIENTE, pageable);
     }
 
     @Override
