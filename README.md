@@ -19,7 +19,7 @@
 
 Sistema de gestión de Áreas de Prioridad Residencial para el Ayuntamiento de Xàtiva. Permite controlar el acceso de vehículos al nucli antic mediante un sistema de solicitudes, acreditaciones y derechos de acceso gestionados desde un panel web y una app móvil Android.
 
-> Proyecto TFG del CFGS DAM en el IES Dr. Lluís Simarro — nota **9/10**. Cedido al Ayuntamiento de Xàtiva como base para una posible implantación real.
+> Proyecto TFG del CFGS DAM en el IES Dr. Lluís Simarro — nota **10/10**. Cedido al Ayuntamiento de Xàtiva como base para una posible implantación real.
 
 ---
 
