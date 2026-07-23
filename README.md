@@ -28,11 +28,12 @@ APR Xàtiva es un sistema de control de acceso vehicular desarrollado como Traba
 - **Control de acceso vehicular** — consulta por matrícula con respuesta inmediata
 - **Gestión de vehículos** — CRUD completo con roles y permisos
 - **Gestión de usuarios** — roles ADMIN y AGENTE
+- **Solicitudes de acceso** — flujo de alta, aprobación y rechazo
 - **Acceso puntual para invitados** — hasta 5 invitaciones mensuales por usuario
 - **Simulador de acceso** — probabilidad 60/40 para testing
-- **Auditoría asíncrona** — registro de todas las operaciones sin impacto en rendimiento
-- **Rate limiting** con Bucket4j en endpoints sensibles
-- **Paginación opcional** en listados
+- **Auditoría asíncrona** — registro de todas las operaciones con `@Async` sin impacto en rendimiento
+- **Rate limiting** con Bucket4j en `/api/auth/**` (10 intentos/minuto por IP)
+- **Paginación opcional** retrocompatible en todos los listados
 - **32 tests unitarios**
 - **Documentación Swagger/OpenAPI 3.1**
 
@@ -59,9 +60,10 @@ APR Xàtiva es un sistema de control de acceso vehicular desarrollado como Traba
 | Lenguaje | Java 21 |
 | Base de datos | MySQL 8 |
 | ORM | Spring Data JPA / Hibernate |
-| Auth | JWT (jjwt) |
-| Rate limiting | Bucket4j |
-| Auditoría | Spring Events (asíncrono) |
+| Auth | JWT (jjwt) + Refresh Tokens |
+| Rate limiting | Bucket4j 8.10.1 |
+| Auditoría | Spring `@Async` + `AuditoriaLog` |
+| Paginación | Spring Data `Page<T>` + `Pageable` |
 | Contenedores | Docker + Docker Compose |
 | Documentación | Swagger / OpenAPI 3.1 |
 | Tests | JUnit 5 + Mockito (32 tests) |
@@ -77,18 +79,28 @@ apr-xativa-backend/
 │   │   ├── AuthController.java
 │   │   ├── VehiculoController.java
 │   │   ├── UsuarioController.java
+│   │   ├── SolicitudController.java
+│   │   ├── DerechoAccesoController.java
 │   │   ├── AccesoController.java
 │   │   └── AuditoriaController.java
 │   ├── service/
+│   │   ├── RefreshTokenService.java
+│   │   ├── AuditoriaService.java
+│   │   └── ...
 │   ├── repository/
+│   │   ├── RefreshTokenRepository.java
+│   │   ├── AuditoriaLogRepository.java
+│   │   └── ...
 │   ├── model/
-│   ├── dto/
+│   │   ├── RefreshToken.java
+│   │   ├── AuditoriaLog.java
+│   │   └── ...
 │   ├── security/
 │   │   ├── JwtUtil.java
 │   │   ├── JwtFilter.java
-│   │   └── RateLimitFilter.java
-│   └── audit/
-│       └── AuditListener.java
+│   │   └── RateLimitingFilter.java
+│   └── config/
+│       └── AsyncConfig.java
 ├── assets/
 │   ├── diagrama_arquitectura.svg
 │   ├── flux_autenticacion_jwt.svg
@@ -145,14 +157,18 @@ JWT_REFRESH_EXPIRATION=604800000
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
-| POST | `/api/auth/login` | Login → JWT |
-| POST | `/api/auth/refresh` | Renovar token |
-| GET | `/api/vehiculos` | Listar vehículos |
+| POST | `/api/auth/login` | Login → JWT + refresh token |
+| POST | `/api/auth/refresh` | Renovar access token |
+| POST | `/api/auth/logout` | Invalidar refresh token |
+| GET | `/api/vehiculos` | Listar vehículos (paginable) |
 | POST | `/api/vehiculos` | Registrar vehículo |
 | GET | `/api/vehiculos/{matricula}/acceso` | Consultar acceso |
 | POST | `/api/acceso/invitado` | Acceso puntual invitado |
-| GET | `/api/usuarios` | Listar usuarios (ADMIN) |
-| GET | `/api/auditoria` | Log de auditoría (ADMIN) |
+| GET | `/api/usuarios` | Listar usuarios (paginable) |
+| GET | `/api/solicitudes` | Listar solicitudes (paginable) |
+| PUT | `/api/solicitudes/{id}/aprobar` | Aprobar solicitud |
+| PUT | `/api/solicitudes/{id}/rechazar` | Rechazar solicitud |
+| GET | `/api/auditoria` | Log de auditoría — filtros por DNI y tipo |
 
 ---
 
@@ -168,14 +184,16 @@ JWT_REFRESH_EXPIRATION=604800000
 
 ## 🗺️ Roadmap
 
-- [x] Auth JWT con refresh token (15 min / 7 días)
+- [x] Auth JWT con access token (15 min) y refresh token (7 días)
+- [x] Endpoints `/api/auth/refresh` y `/api/auth/logout`
+- [x] Rate limiting con Bucket4j (10 intentos/min por IP en `/api/auth/**`)
 - [x] Control de acceso vehicular por matrícula
 - [x] Roles ADMIN y AGENTE
+- [x] Solicitudes de acceso con flujo de aprobación/rechazo
 - [x] Acceso puntual para invitados (5/mes)
 - [x] Simulador con probabilidad 60/40
-- [x] Auditoría asíncrona
-- [x] Rate limiting con Bucket4j
-- [x] Paginación opcional
+- [x] Auditoría asíncrona con `@Async` — alta, baja, aprobación, rechazo
+- [x] Paginación opcional retrocompatible
 - [x] 32 tests unitarios
 - [x] Swagger / OpenAPI 3.1
 - [x] Docker Compose
